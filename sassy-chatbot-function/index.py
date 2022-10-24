@@ -2,6 +2,7 @@ import os
 import ldclient
 from ldclient.config import Config
 import openai
+import json
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -23,7 +24,7 @@ target = {
 
 
 def handler(event, context):
-
+    print(event)
     question = event["queryStringParameters"]["question"]
     response = openai.Completion.create(
         model="text-davinci-002",
@@ -31,7 +32,14 @@ def handler(event, context):
         temperature=0.6,
     )
 
-    return response
+    print(response)
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps({
+            'answer': response.choices[0].text
+        })
+    }
 
 
 def generate_prompt(question):
